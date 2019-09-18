@@ -16,6 +16,6 @@ I suppose you have **python3.5+**, **pip3** and **git** installed on a **linux**
 
 ```$ pip install -r requirements.txt```
 
-**Step 3**: go to the project directory and run the autotimer.py script:
+**Step 3**: run the autotimer script:
 
 ```$ python autotimer.py```
