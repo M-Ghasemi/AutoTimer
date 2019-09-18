@@ -10,7 +10,7 @@ class ActivityList:
             with open(activity_file, 'r') as f:
                 data = json.load(f)
                 self.activities = [
-                    Activity(name=activity['name'], time_entries=self.get_time_entries_from_json(activity))
+                    Activity(name=activity['name'], items=self.get_activity_items_from_json(activity))
                     for activity in data.get('activities')
                 ]
         except FileNotFoundError:
@@ -21,16 +21,21 @@ class ActivityList:
             self.activities = []
 
     @staticmethod
-    def get_time_entries_from_json(data):
+    def get_activity_items_from_json(activity_json):
         return [
-            TimeEntry(
-                start_time=parser.parse(entry['start_time']),
-                end_time=parser.parse(entry['end_time']),
-                days=entry['days'],
-                hours=entry['hours'],
-                minutes=entry['minutes'],
-                seconds=entry['seconds']
-            ) for entry in data['time_entries']
+            ActivityItem(
+                title=item['title'],
+                time_entries=[
+                    TimeEntry(
+                        start_time=parser.parse(entry['start_time']),
+                        end_time=parser.parse(entry['end_time']),
+                        days=entry['days'],
+                        hours=entry['hours'],
+                        minutes=entry['minutes'],
+                        seconds=entry['seconds']
+                    ) for entry in item['time_entries']
+                ]
+            ) for item in activity_json['items']
         ]
 
     def serialize(self):
@@ -47,13 +52,31 @@ class ActivityList:
 
 
 class Activity:
-    def __init__(self, name, time_entries):
+    def __init__(self, name, items):
         self.name = name
-        self.time_entries = time_entries
+        self.items = items
 
     def serialize(self):
         return {
             'name': self.name,
+            'items': self.make_time_entries_to_json()
+        }
+
+    def make_time_entries_to_json(self):
+        time_list = []
+        for time in self.items:
+            time_list.append(time.serialize())
+        return time_list
+
+
+class ActivityItem:
+    def __init__(self, title,  time_entries):
+        self.title = title
+        self.time_entries = time_entries
+
+    def serialize(self):
+        return {
+            'title': self.title,
             'time_entries': self.make_time_entries_to_json()
         }
 

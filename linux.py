@@ -17,7 +17,7 @@ def get_active_window_info():
     class_match = re.match(r"WM_CLASS\(\w+\) = (?P<class>.+)$", window_class)
     name_match = re.match(r"WM_NAME\(\w+\) = (?P<name>.+)$", window_name)
 
-    return ' --> '.join([
+    return [
         class_match.group('class').replace('"', '') if class_match else 'NOCLASS',
         name_match.group("name").replace('"', '') if name_match else 'NONAME'
-    ])
+    ]
