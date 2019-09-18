@@ -1,4 +1,5 @@
 import json
+from json import JSONDecodeError
 
 from dateutil import parser
 
@@ -13,6 +14,10 @@ class ActivityList:
                     for activity in data.get('activities')
                 ]
         except FileNotFoundError:
+            self.activities = []
+        except JSONDecodeError as e:
+            print(repr(e))
+            print('activities.json is either invalid or empty!')
             self.activities = []
 
     @staticmethod
@@ -49,10 +54,10 @@ class Activity:
     def serialize(self):
         return {
             'name': self.name,
-            'time_entries': self.make_time_entires_to_json()
+            'time_entries': self.make_time_entries_to_json()
         }
 
-    def make_time_entires_to_json(self):
+    def make_time_entries_to_json(self):
         time_list = []
         for time in self.time_entries:
             time_list.append(time.serialize())
@@ -60,19 +65,15 @@ class Activity:
 
 
 class TimeEntry:
-    def __init__(self, start_time, end_time, days, hours, minutes, seconds):
+    def __init__(self, start_time, end_time, days=None, hours=None, minutes=None, seconds=None):
         self.start_time = start_time
         self.end_time = end_time
         self.total_time = end_time - start_time
-        self.days = days
-        self.hours = hours
-        self.minutes = minutes
-        self.seconds = seconds
 
-    def _get_specific_times(self):
-        self.days, self.seconds = self.total_time.days, self.total_time.seconds
-        self.hours = self.days * 24 + self.seconds // 3600
-        self.minutes = (self.seconds % 3600) // 60
+        self.days = self.total_time.days if days is None else days
+        self.seconds = self.total_time.seconds if seconds is None else seconds
+        self.hours = self.days * 24 + self.seconds // 3600 if hours is None else hours
+        self.minutes = (self.seconds % 3600) // 60 if minutes is None else minutes
         self.seconds = self.seconds % 60
 
     def serialize(self):
@@ -84,3 +85,9 @@ class TimeEntry:
             'minutes': self.minutes,
             'seconds': self.seconds
         }
+
+
+def save_activities(activity_list):
+    with open('activities.json', 'w') as json_file:
+        json.dump(activity_list.serialize(), json_file,
+                  indent=4, sort_keys=True)
