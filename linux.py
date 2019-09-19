@@ -1,12 +1,13 @@
 import subprocess
 import re
+from typing import List, Union
 
 
-def utf8_string(text):
+def utf8_string(text: Union[str, bytes]) -> str:
     return text.decode('utf-8') if text and type(text) is bytes else ''
 
 
-def get_active_window_info():
+def get_active_window_info() -> List[str]:
     active_window = utf8_string(subprocess.run(['xprop', '-root', '_NET_ACTIVE_WINDOW'], stdout=subprocess.PIPE).stdout)
     window_id = re.search(r'^_NET_ACTIVE_WINDOW.* ([\w]+)$', active_window).group(1)
 
