@@ -3,6 +3,8 @@ from json import JSONDecodeError
 
 from dateutil import parser
 
+from settings import ACTIVITIES_JSON_FILE_PATH
+
 
 class ActivityList:
     def __init__(self, activity_file='activities.json'):
@@ -111,6 +113,6 @@ class TimeEntry:
 
 
 def save_activities(activity_list):
-    with open('activities.json', 'w') as json_file:
+    with open(ACTIVITIES_JSON_FILE_PATH, 'w') as json_file:
         json.dump(activity_list.serialize(), json_file,
-                  indent=4, sort_keys=True)
+                  indent=4, sort_keys=False)

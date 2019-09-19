@@ -3,6 +3,7 @@ import datetime
 import sys
 
 from linux import get_active_window_info
+from settings import SAVE_TO_FILE_INTERVAL
 from activity import (
     ActivityList,
     TimeEntry,
@@ -18,7 +19,6 @@ if __name__ == '__main__':
     active_app_name = active_window_title = ""
     activity_list = ActivityList()
     start_time = datetime.datetime.now()
-    save_to_file_interval = datetime.timedelta(seconds=30)
     last_saved_time = datetime.datetime.now()
 
     try:
@@ -51,7 +51,7 @@ if __name__ == '__main__':
                         activity = Activity(active_app_name, [activity_item])
                         activity_list.activities.append(activity)
 
-                    if datetime.datetime.now() - last_saved_time > save_to_file_interval:
+                    if datetime.datetime.now() - last_saved_time > SAVE_TO_FILE_INTERVAL:
                         sys.stdout.write('\rSaving activities.json\n')
                         save_activities(activity_list)
                         last_saved_time = datetime.datetime.now()
