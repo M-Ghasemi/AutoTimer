@@ -31,6 +31,13 @@ class TimeEntry:
             'seconds': self.seconds
         }
 
+    @property
+    def time_spent(self) -> datetime.timedelta:
+        return self.end_time - self.start_time
+
+    def __str__(self):
+        return str(self.time_spent)
+
 
 class ActivityItem:
     def __init__(self, title: str,  time_entries: List[TimeEntry]):
@@ -46,6 +53,13 @@ class ActivityItem:
     def make_time_entries_to_json(self) -> List[dict]:
         return [time.serialize() for time in self.time_entries]
 
+    @property
+    def time_spent(self) -> datetime.timedelta:
+        return sum((time_entry.time_spent for time_entry in self.time_entries), datetime.timedelta())
+
+    def __str__(self):
+        return '{title}: {time_spent}'.format(title=self.title, time_spent=str(self.time_spent))
+
 
 class Activity:
     def __init__(self, name: str, items: List[ActivityItem]):
@@ -60,6 +74,13 @@ class Activity:
 
     def make_time_entries_to_json(self) -> List[dict]:
         return [item.serialize() for item in self.items]
+
+    @property
+    def time_spent(self) -> datetime.timedelta:
+        return sum((item.time_spent for item in self.items), datetime.timedelta())
+
+    def __str__(self):
+        return '{name}: {time_spent}'.format(name=self.name, time_spent=str(self.time_spent))
 
 
 class ActivityList:
@@ -103,6 +124,13 @@ class ActivityList:
 
     def activities_to_json(self):
         return [activity.serialize() for activity in self.activities]
+
+    @property
+    def time_spent(self):
+        return sum((activity.time_spent for activity in self.activities), datetime.timedelta())
+
+    def __str__(self):
+        return 'Total time: {}'.format(self.time_spent)
 
 
 def save_activities(activity_list):
