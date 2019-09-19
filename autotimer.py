@@ -2,29 +2,41 @@ import time
 import datetime
 import sys
 
-from activity import ActivityList, TimeEntry, Activity, save_activities, ActivityItem
 from linux import get_active_window_info
+from activity import (
+    ActivityList,
+    TimeEntry,
+    Activity,
+    ActivityItem,
+    save_activities)
 
 if sys.platform not in ['linux', 'linux2']:
     raise Exception('Only linux platform is supported')
 
 
 if __name__ == '__main__':
-    active_app_name = ""
-    active_window_title = ""
-    start_time = datetime.datetime.now()
+    active_app_name = active_window_title = ""
     activity_list = ActivityList()
-    first_time = True
+    start_time = datetime.datetime.now()
+    save_to_file_interval = datetime.timedelta(seconds=30)
+    last_saved_time = datetime.datetime.now()
 
     try:
         while True:
             new_app_name, new_window_title = get_active_window_info()
 
             if active_app_name != new_app_name or active_window_title != new_window_title:
-                if not first_time:
-                    print(active_app_name, active_window_title)
+                if active_app_name != "":
                     time_entry = TimeEntry(start_time, datetime.datetime.now())
                     activity_item = ActivityItem(active_window_title, [time_entry])
+                    sys.stdout.write(
+                        """\r{app_name} => {title}
+                        \rTime (hours:minutes:seconds): {hours}:{minutes}:{seconds}
+                        """.format(
+                            app_name=active_app_name, title=active_window_title,
+                            hours=time_entry.hours, minutes=time_entry.minutes, seconds=time_entry.seconds
+                        )
+                    )
 
                     for activity in activity_list.activities:
                         if activity.name == active_app_name:
@@ -38,10 +50,15 @@ if __name__ == '__main__':
                     else:
                         activity = Activity(active_app_name, [activity_item])
                         activity_list.activities.append(activity)
-                    save_activities(activity_list)
+
+                    if datetime.datetime.now() - last_saved_time > save_to_file_interval:
+                        sys.stdout.write('\rSaving activities.json\n')
+                        save_activities(activity_list)
+                        last_saved_time = datetime.datetime.now()
+
                     start_time = datetime.datetime.now()
-                first_time = False
                 active_app_name, active_window_title = new_app_name, new_window_title
             time.sleep(1)
-    except KeyboardInterrupt:
+    except KeyboardInterrupt as e:
         save_activities(activity_list)
+        print(repr(e))
