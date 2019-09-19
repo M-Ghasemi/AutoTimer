@@ -1,13 +1,69 @@
 import json
+import datetime
+
 from json import JSONDecodeError
-
 from dateutil import parser
-
+from typing import List, Union
 from settings import ACTIVITIES_JSON_FILE_PATH
 
 
+class TimeEntry:
+    def __init__(self, start_time: datetime.datetime, end_time: datetime.datetime,
+                 days: Union[int, None] = None, hours: Union[int, None] = None,
+                 minutes: Union[int, None] = None, seconds: Union[int, None] = None):
+        self.start_time = start_time
+        self.end_time = end_time
+        self.total_time = end_time - start_time
+
+        self.days = self.total_time.days if days is None else days
+        self.seconds = self.total_time.seconds if seconds is None else seconds
+        self.hours = self.days * 24 + self.seconds // 3600 if hours is None else hours
+        self.minutes = (self.seconds % 3600) // 60 if minutes is None else minutes
+        self.seconds = self.seconds % 60
+
+    def serialize(self) -> dict:
+        return {
+            'start_time': self.start_time.strftime("%Y-%m-%d %H:%M:%S"),
+            'end_time': self.end_time.strftime("%Y-%m-%d %H:%M:%S"),
+            'days': self.days,
+            'hours': self.hours,
+            'minutes': self.minutes,
+            'seconds': self.seconds
+        }
+
+
+class ActivityItem:
+    def __init__(self, title: str,  time_entries: List[TimeEntry]):
+        self.title = title
+        self.time_entries = time_entries
+
+    def serialize(self) -> dict:
+        return {
+            'title': self.title,
+            'time_entries': self.make_time_entries_to_json()
+        }
+
+    def make_time_entries_to_json(self) -> List[dict]:
+        return [time.serialize() for time in self.time_entries]
+
+
+class Activity:
+    def __init__(self, name: str, items: List[ActivityItem]):
+        self.name = name
+        self.items = items
+
+    def serialize(self) -> dict:
+        return {
+            'name': self.name,
+            'items': self.make_time_entries_to_json()
+        }
+
+    def make_time_entries_to_json(self) -> List[dict]:
+        return [item.serialize() for item in self.items]
+
+
 class ActivityList:
-    def __init__(self, activity_file='activities.json'):
+    def __init__(self, activity_file: str = 'activities.json'):
         try:
             with open(activity_file, 'r') as f:
                 data = json.load(f)
@@ -23,7 +79,7 @@ class ActivityList:
             self.activities = []
 
     @staticmethod
-    def get_activity_items_from_json(activity_json):
+    def get_activity_items_from_json(activity_json: dict) -> List[ActivityItem]:
         return [
             ActivityItem(
                 title=item['title'],
@@ -40,76 +96,13 @@ class ActivityList:
             ) for item in activity_json['items']
         ]
 
-    def serialize(self):
+    def serialize(self) -> dict:
         return {
             'activities': self.activities_to_json()
         }
 
     def activities_to_json(self):
-        activities_ = []
-        for activity in self.activities:
-            activities_.append(activity.serialize())
-
-        return activities_
-
-
-class Activity:
-    def __init__(self, name, items):
-        self.name = name
-        self.items = items
-
-    def serialize(self):
-        return {
-            'name': self.name,
-            'items': self.make_time_entries_to_json()
-        }
-
-    def make_time_entries_to_json(self):
-        time_list = []
-        for time in self.items:
-            time_list.append(time.serialize())
-        return time_list
-
-
-class ActivityItem:
-    def __init__(self, title,  time_entries):
-        self.title = title
-        self.time_entries = time_entries
-
-    def serialize(self):
-        return {
-            'title': self.title,
-            'time_entries': self.make_time_entries_to_json()
-        }
-
-    def make_time_entries_to_json(self):
-        time_list = []
-        for time in self.time_entries:
-            time_list.append(time.serialize())
-        return time_list
-
-
-class TimeEntry:
-    def __init__(self, start_time, end_time, days=None, hours=None, minutes=None, seconds=None):
-        self.start_time = start_time
-        self.end_time = end_time
-        self.total_time = end_time - start_time
-
-        self.days = self.total_time.days if days is None else days
-        self.seconds = self.total_time.seconds if seconds is None else seconds
-        self.hours = self.days * 24 + self.seconds // 3600 if hours is None else hours
-        self.minutes = (self.seconds % 3600) // 60 if minutes is None else minutes
-        self.seconds = self.seconds % 60
-
-    def serialize(self):
-        return {
-            'start_time': self.start_time.strftime("%Y-%m-%d %H:%M:%S"),
-            'end_time': self.end_time.strftime("%Y-%m-%d %H:%M:%S"),
-            'days': self.days,
-            'hours': self.hours,
-            'minutes': self.minutes,
-            'seconds': self.seconds
-        }
+        return [activity.serialize() for activity in self.activities]
 
 
 def save_activities(activity_list):
