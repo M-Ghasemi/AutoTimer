@@ -7,6 +7,7 @@ This repository was originally forked from [KalleHallden AutoTimer](https://gith
 ## Getting Started
 
 I suppose you have **python3.5+**, **pip3** and **git** installed on a **linux** system.
+Python 2.7+ also might work correctly but only python 3.5+ has been tested. 
 
 **Step 1**: Get a copy of project:
 
@@ -18,4 +19,49 @@ I suppose you have **python3.5+**, **pip3** and **git** installed on a **linux**
 
 **Step 3**: run the autotimer script:
 
-```$ python autotimer.py```
+```$ python3 autotimer.py```
+
+## Settings
+
+You can specify the time interval for storing activities in "activities.json".
+You also can specify the name of the file your activities saves in. the defaults are:
+
+`ACTIVITIES_JSON_FILE = "activities.json"`<br>
+`SAVE_TO_FILE_INTERVAL = datetime.timedelta(hours=0, minutes=0, seconds=30)`
+
+(There are some more variables you can customize. take a look at settings.py)
+
+## Daemon
+
+In short, a Daemon is a background process. This part explains how to make AutoTimer
+to run as a service.
+
+**Create AutoTimer service (Daemonize)**:
+
+```$ python3 service.py daemonize```
+
+**Delete AutoTimer service (UnDaemonize)**:
+
+```$ python3 service.py undaemonize```
+
+**<You need to first run daemonize command, before executing the following commands>**
+
+**Start AutoTimer service**: run AutoTimer as a background service.
+
+```$ python3 service.py start```
+
+**Stop AutoTimer service**:
+
+```$ python3 service.py stop```
+
+**Status AutoTimer service**:
+
+```$ python3 service.py status```
+
+**Enable AutoTimer service**: enable Autotimer service to run at startup.
+
+```$ python3 service.py enable```
+
+**Disable AutoTimer service**: disable Autotimer service (from running at startup).
+
+```$ python3 service.py disable```
