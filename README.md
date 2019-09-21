@@ -34,7 +34,7 @@ You also can specify the name of the file your activities saves in. the defaults
 ## Daemon
 
 In short, a Daemon is a background process. This part explains how to make AutoTimer
-to run as a service.
+a daemon.
 
 **Create AutoTimer service (Daemonize)**:
 
@@ -65,3 +65,10 @@ to run as a service.
 **Disable AutoTimer service**: disable Autotimer service (from running at startup).
 
 ```$ python3 service.py disable```
+
+## TODO
+
+- add a reporter function that summarizes hours spent on each application and each window.
+- add a reporter function that compares hours spent on each application and each window.
+- add a reporter function that shows spent hours by percentage.
+- add a some charts.
