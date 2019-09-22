@@ -47,3 +47,7 @@ def hours_report(activity_list: ActivityList, fine_grained: bool = True, full_de
                     report = add_time_entries_to_report(report, item, item_indent * 2)
 
     return report
+
+
+def print_hours_report(fine_grained: bool = True, full_detail=False):
+    print(hours_report(ActivityList(), fine_grained, full_detail))
