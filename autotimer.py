@@ -1,8 +1,10 @@
 import time
 import datetime
 import sys
+import argparse
 
 from linux import get_active_window_info
+from report import print_hours_report
 from settings import SAVE_TO_FILE_INTERVAL
 from activity import (
     ActivityList,
@@ -15,7 +17,7 @@ if sys.platform not in ['linux', 'linux2']:
     raise Exception('Only linux platform is supported')
 
 
-if __name__ == '__main__':
+def start():
     active_app_name = active_window_title = ""
     activity_list = ActivityList()
     start_time = datetime.datetime.now()
@@ -62,3 +64,26 @@ if __name__ == '__main__':
     except KeyboardInterrupt as e:
         save_activities(activity_list)
         print(repr(e))
+
+
+def run():
+    HOURS_REPORT = 'hours-report'
+
+    run_command = {
+        HOURS_REPORT: print_hours_report
+    }
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '-c', '--command', choices=[HOURS_REPORT],
+        help="`{hr}`: print hours spent on each application and each window/tab.".format(hr=HOURS_REPORT)
+    )
+
+    args = parser.parse_args()
+    if args.command is None:
+        start()
+    else:
+        run_command[args.command]()
+
+
+if __name__ == '__main__':
+    run()
