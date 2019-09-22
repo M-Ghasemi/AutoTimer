@@ -8,12 +8,14 @@ from settings import DAEMON_DIR, DAEMON_FILE_PATH, AUTO_TIMER_FILE, DAEMON_FILE_
 daemon_str = """
 [Unit]
 Description=Linux Auto Timer
+After=graphical.target graphical-session.target nautilus.service
 
 [Service]
 # User={user}
 # Group={group}
 ExecStart={python} {auto_timer}
 Restart=always
+RestartSec=3
 
 [Install]
 WantedBy=default.target
@@ -28,6 +30,11 @@ def start_service():
 def stop_service():
     print('stopping...')
     subprocess.run(['systemctl', '--user', 'stop', DAEMON_FILE_NAME])
+
+
+def restart_service():
+    print('restarting...')
+    subprocess.run(['systemctl', '--user', 'restart', DAEMON_FILE_NAME])
 
 
 def enable_service():
@@ -82,6 +89,7 @@ def run():
     UNDAEMONIZE = 'undaemonize'
     START = 'start'
     STOP = 'stop'
+    RESTART = 'restart'
     ENABLE = 'enable'
     DISABLE = 'disable'
     STATUS = 'status'
@@ -89,6 +97,7 @@ def run():
     run_command = {
         START: start_service,
         STOP: stop_service,
+        RESTART: restart_service,
         STATUS: status,
         ENABLE: enable_service,
         DISABLE: disable_service,
@@ -96,7 +105,7 @@ def run():
         UNDAEMONIZE: undaemonize,
     }
     parser = argparse.ArgumentParser()
-    parser.add_argument('command', choices=[DAEMONIZE, UNDAEMONIZE, START, STOP, ENABLE, DISABLE, STATUS],
+    parser.add_argument('command', choices=[DAEMONIZE, UNDAEMONIZE, START, STOP, RESTART, ENABLE, DISABLE, STATUS],
                         help=("`daemonize`: create service, `undaemonize`: delete service, "
                               "`start`: start service, `stop`: stop service, `status`: print status, "
                               "`enable`: enable service to run at startup, "
