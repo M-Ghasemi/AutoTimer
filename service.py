@@ -1,9 +1,9 @@
-import os
-import sys
-import subprocess
 import argparse
+import os
+import subprocess
+import sys
 
-from settings import DAEMON_DIR, DAEMON_FILE_PATH, AUTO_TIMER_FILE, DAEMON_FILE_NAME
+from settings import DAEMON_DIR, DAEMON_FILE_PATH, AUTO_TIMER_FILE, DAEMON_FILE_NAME, COMMANDS
 
 daemon_str = """
 [Unit]
@@ -13,7 +13,7 @@ After=graphical.target graphical-session.target nautilus.service
 [Service]
 # User={user}
 # Group={group}
-ExecStart={python} {auto_timer}
+ExecStart={python} {auto_timer} {run_command}
 Restart=always
 RestartSec=3
 
@@ -73,7 +73,8 @@ def daemonize():
                     user=os.environ['USER'],
                     group=os.environ['USER'],
                     python=sys.executable,
-                    auto_timer=AUTO_TIMER_FILE
+                    auto_timer=AUTO_TIMER_FILE,
+                    run_command=COMMANDS.RUN
                 )
             )
     except Exception as e:

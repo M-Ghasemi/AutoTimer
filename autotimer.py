@@ -1,22 +1,29 @@
-import time
 import datetime
 import sys
-import argparse
+import time
+import click
 
-from linux import get_active_window_info
-from report import print_hours_report
-from settings import SAVE_TO_FILE_INTERVAL
 from activity import (
     ActivityList,
     TimeEntry,
     Activity,
     ActivityItem,
     save_activities)
+from linux import get_active_window_info
+from report import print_hours_report
+from settings import COMMANDS, OPTIONS
+from settings import SAVE_TO_FILE_INTERVAL
 
 if sys.platform not in ['linux', 'linux2']:
     raise Exception('Only linux platform is supported')
 
 
+@click.group()
+def auto_timer():
+    pass
+
+
+@auto_timer.command(name=COMMANDS.RUN)
 def start():
     active_app_name = active_window_title = ""
     activity_list = ActivityList()
@@ -66,24 +73,16 @@ def start():
         print(repr(e))
 
 
-def run():
-    HOURS_REPORT = 'hours-report'
-
-    run_command = {
-        HOURS_REPORT: print_hours_report
-    }
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        '-c', '--command', choices=[HOURS_REPORT],
-        help="`{hr}`: print hours spent on each application and each window/tab.".format(hr=HOURS_REPORT)
-    )
-
-    args = parser.parse_args()
-    if args.command is None:
-        start()
-    else:
-        run_command[args.command]()
+@auto_timer.command(name=COMMANDS.HOURS_REPORT)
+@click.option(OPTIONS.FINE_GRAINED, default=True,
+              show_default=True, type=click.BOOL,
+              help='print hours spent on each application and each window/tab.')
+@click.option(OPTIONS.FULL_DETAILS, default=False,
+              show_default=True, type=click.BOOL,
+              help='Print in most details available.')
+def hours_report(fine_grained: bool, full_details: bool):
+    print_hours_report(fine_grained, full_details)
 
 
 if __name__ == '__main__':
-    run()
+    auto_timer()
