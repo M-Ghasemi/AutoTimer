@@ -19,7 +19,7 @@ Python 2.7+ also might work correctly but only python 3.5+ has been tested.
 
 **Step 3**: run the autotimer script:
 
-```$ python3 autotimer.py```
+```$ python3 autotimer.py run```
 
 ## Settings
 
@@ -65,6 +65,14 @@ a daemon.
 **Disable AutoTimer service**: disable Autotimer service (from running at startup).
 
 ```$ python3 service.py disable```
+
+## Reports
+
+**Print print hours spent on each application and each window/tab.**:
+
+```$ python3 autotimer.py hours-report```
+
+for more options run: ```$ python3 autotimer.py hours-report --help```
 
 ## TODO
 
