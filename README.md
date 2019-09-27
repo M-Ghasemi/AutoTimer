@@ -68,7 +68,7 @@ a daemon.
 
 ## Reports
 
-**Print print hours spent on each application and each window/tab.**:
+**Print hours spent on each application and each window/tab.**:
 
 ```$ python3 autotimer.py hours-report```
 
