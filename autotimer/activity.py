@@ -84,7 +84,7 @@ class Activity:
 
 
 class ActivityList:
-    def __init__(self, activity_file: str = 'activities.json'):
+    def __init__(self, activity_file: str = ACTIVITIES_JSON_FILE_PATH):
         try:
             with open(activity_file, 'r') as f:
                 data = json.load(f)
