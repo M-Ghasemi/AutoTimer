@@ -13,14 +13,16 @@ Python 2.7+ also might work correctly but only python 3.5+ has been tested.
 
 ```$ git clone git@github.com:M-Ghasemi/AutoTimer.git```
 
-**Step 2**: Install required packages. make sure that you are in the root directory of the project (```$ cd AutoTimer```).
+**Step 2**: Install required packages. make sure that you are in the root directory of the project (```$ cd AutoTimer/autotimer```).
 
 ```$ pip install -r requirements.txt```
 
-**Step 3**: run the autotimer script:
+**Step 3**: Run AutoTimer:
 
-```$ python3 autotimer.py run```
+```$ python3 timer.py run```
 
+    for more info run:
+    ```$ python3 timer.py --help``` 
 ## Settings
 
 You can specify the time interval for storing activities in "activities.json".
@@ -58,11 +60,11 @@ a daemon.
 
 ```$ python3 service.py status```
 
-**Enable AutoTimer service**: enable Autotimer service to run at startup.
+**Enable AutoTimer service**: enable AutoTimer service to run at startup.
 
 ```$ python3 service.py enable```
 
-**Disable AutoTimer service**: disable Autotimer service (from running at startup).
+**Disable AutoTimer service**: disable AutoTimer service (from running at startup).
 
 ```$ python3 service.py disable```
 
@@ -70,9 +72,9 @@ a daemon.
 
 **Print hours spent on each application and each window/tab.**:
 
-```$ python3 autotimer.py hours-report```
+```$ python3 timer.py hours-report```
 
-for more options run: ```$ python3 autotimer.py hours-report --help```
+for more options run: ```$ python3 timer.py hours-report --help```
 
 ## TODO
 
