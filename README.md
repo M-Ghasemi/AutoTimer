@@ -72,7 +72,18 @@ a daemon.
 
 **Print hours spent on each application and each window/tab.**:
 
-```$ python3 timer.py hours-report```
+- print with default granularity and default format:
+
+    ```$ python3 timer.py hours-report```
+
+- print with custom colors:
+    ```$ python3 timer.py hours-report --time-color white --title-color magenta```
+
+- print in full details: 
+    ```$ python3 timer.py hours-report --full-details true```
+
+- print hours without any details:
+    ```$ python3 timer.py hours-report --fine-grained false```
 
 for more options run: ```$ python3 timer.py hours-report --help```
 
