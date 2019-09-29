@@ -81,4 +81,4 @@ for more options run: ```$ python3 timer.py hours-report --help```
 - add a reporter function that summarizes hours spent on each application and each window.
 - add a reporter function that compares hours spent on each application and each window.
 - add a reporter function that shows spent hours by percentage.
-- add a some charts.
+- add some charts.

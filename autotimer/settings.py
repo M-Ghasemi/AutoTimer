@@ -19,15 +19,31 @@ DAEMON_FILE_PATH = os.path.join(DAEMON_DIR, DAEMON_FILE_NAME)
 # DO NOT CHANGE
 AUTO_TIMER_FILE = os.path.join(BASE_DIR, 'timer.py')
 _COMMANDS = namedtuple('commands', ['RUN', 'HOURS_REPORT'])
-_OPTIONS = namedtuple('options', ['FINE_GRAINED', 'FULL_DETAILS'])
+_OPTIONS = namedtuple('options', ['FINE_GRAINED', 'FULL_DETAILS', 'TIME_COLOR', 'TITLE_COLOR'])
+_COLORS = namedtuple('colors', ['black', 'blue', 'cyan', 'green', 'magenta', 'red', 'white', 'yellow'])
+COLORS = _COLORS('black', 'blue', 'cyan', 'green', 'magenta', 'red', 'white', 'yellow')
+# ui
+BOLD = True
+NORMAL = False
 
 
-# you are free to change these variables
+# you are free to change these variables but remember to use the exact
+# same string while calling timer.py
 COMMANDS = _COMMANDS(
     RUN='run',
     HOURS_REPORT='hours-report'
 )
 OPTIONS = _OPTIONS(
     FINE_GRAINED='--fine-grained',
-    FULL_DETAILS='--full-details'
+    FULL_DETAILS='--full-details',
+    TIME_COLOR='--time-color',
+    TITLE_COLOR='--title-color',
 )
+# report colors
+TIME_COLOR = COLORS.cyan
+TIME_FONT_THICKNESS = BOLD  # choices: [BOLD, NORMAL]
+MAIN_TITLE_COLOR = COLORS.white
+TITLE_COLOR = COLORS.white
+APP_TITLE_COLOR = COLORS.yellow
+DEFAULT_FONT_COLOR = COLORS.white
+
