@@ -16,7 +16,7 @@ DAEMON_DIR = os.path.join(os.environ['HOME'], '.config', 'systemd', 'user')
 DAEMON_FILE_PATH = os.path.join(DAEMON_DIR, DAEMON_FILE_NAME)
 
 # DO NOT CHANGE
-AUTO_TIMER_FILE = os.path.join(BASE_DIR, 'autotimer.py')
+AUTO_TIMER_FILE = os.path.join(BASE_DIR, 'AutoTimer.py')
 _COMMANDS = namedtuple('commands', ['RUN', 'HOURS_REPORT'])
 _OPTIONS = namedtuple('options', ['FINE_GRAINED', 'FULL_DETAILS'])
 
