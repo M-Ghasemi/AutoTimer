@@ -126,3 +126,4 @@ dmypy.json
 # AutoTimer
 activities.json
 .idea/
+local_files/
