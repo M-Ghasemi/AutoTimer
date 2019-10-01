@@ -1,9 +1,10 @@
-import json
 import datetime
-
+import json
 from json import JSONDecodeError
+from typing import List, Union, Tuple
+
 from dateutil import parser
-from typing import List, Union
+
 from settings import ACTIVITIES_JSON_FILE_PATH
 
 
@@ -35,12 +36,24 @@ class TimeEntry:
     def time_spent(self) -> datetime.timedelta:
         return self.end_time - self.start_time
 
+    def time_spent_in(self,
+                      start: datetime.datetime = None,
+                      end: datetime.datetime = None) -> datetime.timedelta:
+        if start is None:
+            start = self.start_time
+        if end is None:
+            end = self.end_time
+
+        if self.end_time < start or end < self.start_time:
+            return datetime.timedelta(0)
+        return min(self.end_time, end) - max(self.start_time, start)
+
     def __str__(self):
         return str(self.time_spent)
 
 
 class ActivityItem:
-    def __init__(self, title: str,  time_entries: List[TimeEntry]):
+    def __init__(self, title: str, time_entries: List[TimeEntry]):
         self.title = title
         self.time_entries = time_entries
 
@@ -56,6 +69,26 @@ class ActivityItem:
     @property
     def time_spent(self) -> datetime.timedelta:
         return sum((time_entry.time_spent for time_entry in self.time_entries), datetime.timedelta())
+
+    def time_spent_in(self,
+                      start: datetime.datetime = None,
+                      end: datetime.datetime = None) -> datetime.timedelta:
+        return sum(
+            (time_entry.time_spent_in(start, end) for time_entry in self.time_entries),
+            datetime.timedelta()
+        )
+
+    @property
+    def time_interval(self) -> Tuple[datetime.datetime, datetime.datetime]:
+        return self.time_entries[0].start_time, self.time_entries[-1].end_time
+
+    @property
+    def start_time(self) -> datetime.datetime:
+        return self.time_entries[0].start_time
+
+    @property
+    def end_time(self) -> datetime.datetime:
+        return self.time_entries[-1].end_time
 
     def __str__(self):
         return '{title}: {time_spent}'.format(title=self.title, time_spent=str(self.time_spent))
@@ -78,6 +111,29 @@ class Activity:
     @property
     def time_spent(self) -> datetime.timedelta:
         return sum((item.time_spent for item in self.items), datetime.timedelta())
+
+    def time_spent_in(self,
+                      start: datetime.datetime = None,
+                      end: datetime.datetime = None) -> datetime.timedelta:
+        return sum(
+            (item.time_spent_in(start, end) for item in self.items
+                if ((start is None or start < item.end_time) and
+                    (end is None or item.start_time < end))
+             ),
+            datetime.timedelta()
+        )
+
+    @property
+    def time_interval(self) -> Tuple[datetime.datetime, datetime.datetime]:
+        return self.items[0].start_time, self.items[-1].end_time
+
+    @property
+    def start_time(self) -> datetime.datetime:
+        return self.items[0].start_time
+
+    @property
+    def end_time(self) -> datetime.datetime:
+        return self.items[-1].end_time
 
     def __str__(self):
         return '{name}: {time_spent}'.format(name=self.name, time_spent=str(self.time_spent))
@@ -128,6 +184,29 @@ class ActivityList:
     @property
     def time_spent(self):
         return sum((activity.time_spent for activity in self.activities), datetime.timedelta())
+
+    def time_spent_in(self,
+                      start=None,
+                      end=None) -> datetime.timedelta:
+        return sum(
+            (activity.time_spent_in(start, end) for activity in self.activities
+                if ((start is None or start < activity.end_time) and
+                    (end is None or activity.start_time < end))
+             ),
+            datetime.timedelta()
+        )
+
+    @property
+    def time_interval(self) -> Tuple[datetime.datetime, datetime.datetime]:
+        return self.activities[0].start_time, self.activities[-1].end_time
+
+    @property
+    def start_time(self) -> datetime.datetime:
+        return self.activities[0].start_time
+
+    @property
+    def end_time(self) -> datetime.datetime:
+        return self.activities[-1].end_time
 
     def __str__(self):
         return 'Total time: {}'.format(self.time_spent)
