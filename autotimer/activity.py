@@ -140,7 +140,9 @@ class Activity:
 
 
 class ActivityList:
+
     def __init__(self, activity_file: str = ACTIVITIES_JSON_FILE_PATH):
+        self.activities = []  # type: List[Activity]
         try:
             with open(activity_file, 'r') as f:
                 data = json.load(f)
@@ -186,8 +188,8 @@ class ActivityList:
         return sum((activity.time_spent for activity in self.activities), datetime.timedelta())
 
     def time_spent_in(self,
-                      start=None,
-                      end=None) -> datetime.timedelta:
+                      start: datetime.datetime = None,
+                      end: datetime.datetime = None) -> datetime.timedelta:
         return sum(
             (activity.time_spent_in(start, end) for activity in self.activities
                 if ((start is None or start < activity.end_time) and
