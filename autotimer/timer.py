@@ -1,10 +1,11 @@
 import datetime
 import sys
 import time
+
 import click
+import dateutil
 
 import settings
-
 from activity import (
     ActivityList,
     TimeEntry,
@@ -16,6 +17,40 @@ from report import print_hours_report
 
 if sys.platform not in ['linux', 'linux2']:
     raise Exception('Only linux platform is supported')
+
+
+class DateTime(click.types.ParamType):
+    """The DateTime type converts date strings into `datetime` objects."""
+
+    name = 'datetime'
+    help = ('datetime string with this format:\t\t\r'
+            '%Y-%m-%d %H:%M:%S\n'
+            'If you do not know how dateutil.parser.parse works, enter a full datetime string.\t\r'
+            'examples:\n'
+            '"2019-10-29 14:30:23"\n'
+            '"2019-10-29 14"\n'
+            '2019-10-29\n')
+
+    def __init__(self):
+        self.formats = [
+            '%Y-%m-%d %H:%M:%S',
+            '%Y-%m-%d %H:%M',
+            '%Y-%m-%d %H',
+            '%Y-%m-%d',
+            '%Y-%m',
+            '%Y',
+        ]
+
+    def convert(self, value, param, ctx):
+        try:
+            return dateutil.parser.parse(value)
+        except Exception:
+            self.fail(
+                'invalid datetime format: {}. (use one of {})'.format(
+                    value, ', '.join(self.formats)))
+
+    def __repr__(self):
+        return 'DateTime'
 
 
 @click.group()
@@ -39,11 +74,9 @@ def start():
                     time_entry = TimeEntry(start_time, datetime.datetime.now())
                     activity_item = ActivityItem(active_window_title, [time_entry])
                     sys.stdout.write(
-                        """\r{app_name} => {title}
-                        \rTime (hours:minutes:seconds): {hours}:{minutes}:{seconds}
-                        """.format(
+                        "\n{app_name} => {title}\nTime: {time}\n".format(
                             app_name=active_app_name, title=active_window_title,
-                            hours=time_entry.hours, minutes=time_entry.minutes, seconds=time_entry.seconds
+                            time=activity_item.time_spent
                         )
                     )
 
@@ -74,20 +107,39 @@ def start():
 
 
 @auto_timer.command(name=settings.COMMANDS.HOURS_REPORT)
-@click.option(settings.OPTIONS.FINE_GRAINED, default=True,
-              show_default=True, type=click.BOOL,
-              help='print hours spent on each application and each window/tab.')
-@click.option(settings.OPTIONS.FULL_DETAILS, default=False,
-              show_default=True, type=click.BOOL,
+@click.option(settings.OPTIONS.START_TIME,
+              type=DateTime(),
+              help=DateTime.help)
+@click.option(settings.OPTIONS.END_TIME,
+              type=DateTime(),
+              help=DateTime.help)
+@click.option(settings.OPTIONS.FINE_GRAINED,
+              type=click.BOOL,
+              default=True,
+              show_default=True,
+              help='Print hours spent on each application and each window/tab.')
+@click.option(settings.OPTIONS.FULL_DETAILS,
+              type=click.BOOL,
+              default=False,
+              show_default=True,
               help='Print in most details available.')
-@click.option(settings.OPTIONS.TIME_COLOR, type=click.Choice(settings.COLORS),
-              default=settings.TIME_COLOR, show_default=True,
+@click.option(settings.OPTIONS.TIME_COLOR,
+              type=click.Choice(settings.COLORS),
+              default=settings.TIME_COLOR,
+              show_default=True,
               help='Times font color.')
-@click.option(settings.OPTIONS.TITLE_COLOR, type=click.Choice(settings.COLORS),
-              default=settings.TITLE_COLOR, show_default=True,
+@click.option(settings.OPTIONS.TITLE_COLOR,
+              type=click.Choice(settings.COLORS),
+              default=settings.TITLE_COLOR,
+              show_default=True,
               help='Titles font color.')
-def hours_report(fine_grained: bool, full_details: bool, time_color: str, title_color: str):
-    print_hours_report(fine_grained, full_details, time_color, title_color)
+def hours_report(start_time: datetime.datetime,
+                 end_time: datetime.datetime,
+                 fine_grained: bool,
+                 full_details: bool,
+                 time_color: str,
+                 title_color: str):
+    print_hours_report(start_time, end_time, fine_grained, full_details, time_color, title_color)
 
 
 if __name__ == '__main__':
