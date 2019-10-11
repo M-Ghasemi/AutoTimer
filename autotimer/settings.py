@@ -12,9 +12,12 @@ SAVE_TO_FILE_INTERVAL = datetime.timedelta(hours=0, minutes=0, seconds=30)
 DAEMON_FILE_NAME = 'auto_timer.service'
 
 # DO NOT CHANGE UNLESS YOU KNOW WHAT YOU ARE DOING
-ACTIVITIES_JSON_FILE_PATH = os.path.join(BASE_DIR, DATA_DIR,ACTIVITIES_JSON_FILE)
+ACTIVITIES_JSON_FILE_PATH = os.path.join(BASE_DIR, DATA_DIR, ACTIVITIES_JSON_FILE)
 DAEMON_DIR = os.path.join(os.environ['HOME'], '.config', 'systemd', 'user')
 DAEMON_FILE_PATH = os.path.join(DAEMON_DIR, DAEMON_FILE_NAME)
+
+# MAKE SURE THAT DATA DIRECTORY EXISTS
+os.makedirs(os.path.join(BASE_DIR, DATA_DIR), exist_ok=True)
 
 # DO NOT CHANGE
 AUTO_TIMER_FILE = os.path.join(BASE_DIR, 'timer.py')
