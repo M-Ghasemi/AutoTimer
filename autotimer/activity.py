@@ -215,6 +215,7 @@ class ActivityList:
 
 
 def save_activities(activity_list):
-    with open(ACTIVITIES_JSON_FILE_PATH, 'w') as json_file:
+    with open(ACTIVITIES_JSON_FILE_PATH, 'w', encoding='utf-8') as json_file:
         json.dump(activity_list.serialize(), json_file,
-                  indent=4, sort_keys=False)
+                  indent=4, sort_keys=False, ensure_ascii=False)
+
